@@ -153,10 +153,9 @@ export default function Home() {
 
     telephone: Yup.string()
       .required("Le numéro de téléphone est obligatoire")
-      .test(
-        "len",
-        "Le numéro doit contenir 10 chiffres",
-        (val) => val.replace(/\s+/g, "").length === 10
+      .matches(
+        /^[0-9]{10}$|^(\+33|0)[1-9](\d{2}){4}$/,
+        "Le numéro doit contenir 10 chiffres"
       ),
 
     message: Yup.string()
