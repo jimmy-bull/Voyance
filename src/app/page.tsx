@@ -209,14 +209,14 @@ export default function Home() {
         <div className="bg-red-500 py-5 relative flex justify-center items-center text-white gap-5 flex-wrap  ">
           <div className="flex gap-2 items-center">
             <PhoneCall
-              className="h-7 w-7 cursor-pointer text-white"
+              className="sm:h-7 sm:w-7 w-5 h-5 cursor-pointer text-white"
               aria-hidden="true"
             />
             <span className="sm:text-sm text-xs">+33 773072938 </span>
           </div>
           <div className="flex gap-2 items-center">
             <Mails
-              className="h-7 w-7 cursor-pointer text-white sm:text-sm text-xs"
+              className="sm:h-7 sm:w-7 w-5 h-5 cursor-pointer text-white sm:text-sm text-xs"
               aria-hidden="true"
             />
             <span className="sm:text-sm text-xs">bafodesakho255@gmail.com</span>
