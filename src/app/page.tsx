@@ -144,7 +144,7 @@ export default function Home() {
               className="h-7 w-7 cursor-pointer text-white"
               aria-hidden="true"
             />
-            <span className="sm:text-sm text-xs">+33 773072938</span>
+            <span className="sm:text-sm text-xs">+33 773072938 </span>
           </div>
           <div className="flex gap-2 items-center">
             <Mails
