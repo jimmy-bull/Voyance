@@ -25,6 +25,14 @@ import { motion } from "framer-motion";
 import axios from "axios";
 import * as Yup from "yup";
 import { Formik, Form, Field, FormikHelpers } from "formik";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 
 // Interface for form values
 interface ContactFormValues {
@@ -145,7 +153,7 @@ export default function Home() {
 
     telephone: Yup.string()
       .required("Le numéro de téléphone est obligatoire")
-      .matches(/^[0-9]{8}$/, "Le numéro doit contenir 8 chiffres"),
+      .matches(/^[0-9]{10}$/, "Le numéro doit contenir 10 chiffres"),
 
     message: Yup.string()
       .required("Le message est obligatoire")
@@ -160,6 +168,8 @@ export default function Home() {
     telephone: "",
     message: "",
   };
+
+  const [open, set_open] = useState(false);
 
   const handleSubmit = (
     values: ContactFormValues,
@@ -184,7 +194,7 @@ export default function Home() {
         }
       )
       .then((response) => {
-        console.log(values);
+        set_open(true);
         setSubmitting(false);
         resetForm();
       })
@@ -903,6 +913,18 @@ export default function Home() {
           </div>
         </div>
       </div>
+
+      <Dialog open={open} onOpenChange={set_open}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Bravo</DialogTitle>
+            <DialogDescription>
+              Votre message a été envoyé. Je vous contacterai dans les plus
+              brefs délais. Merci.
+            </DialogDescription>
+          </DialogHeader>
+        </DialogContent>
+      </Dialog>
     </>
   );
 }
