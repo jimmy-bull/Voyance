@@ -281,12 +281,11 @@ export default function Home() {
             véritable. Explorez dès maintenant et laissez la magie opérer dans
             votre vie.
           </p>
-          <Button
-            className="mt-5 rounded-full py-5 animate__animated  animate__infinite	animate__pulse"
-            variant="outline"
-          >
-            Contactez-moi
-          </Button>
+          <Link href={"#contact"}>
+            <Button className="mt-5 rounded-full py-5 animate__animated  animate__infinite	animate__pulse bg-white text-black hover:bg-black hover:text-white">
+              Contactez-moi
+            </Button>
+          </Link>
         </div>
       </div>
 
