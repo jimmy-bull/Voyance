@@ -23,6 +23,18 @@ import ScrollAnimation from "react-animate-on-scroll";
 import "animate.css";
 import { motion } from "framer-motion";
 import axios from "axios";
+import * as Yup from "yup";
+import { Formik, Form, Field, FormikHelpers } from "formik";
+
+// Interface for form values
+interface ContactFormValues {
+  nom: string;
+  prenom: string;
+  email: string;
+  telephone: string;
+  message: string;
+}
+
 export default function Home() {
   const [links, set_links] = useState([
     {
@@ -115,7 +127,45 @@ export default function Home() {
     isInView_ref_contact,
   ]);
 
-  const sendMessage = async () => {
+  // Validation Schema
+  const validationSchema: Yup.Schema<ContactFormValues> = Yup.object().shape({
+    nom: Yup.string()
+      .required("Le nom est obligatoire")
+      .min(2, "Le nom doit contenir au moins 2 caractères")
+      .max(50, "Le nom ne peut pas dépasser 50 caractères"),
+
+    prenom: Yup.string()
+      .required("Le prénom est obligatoire")
+      .min(2, "Le prénom doit contenir au moins 2 caractères")
+      .max(50, "Le prénom ne peut pas dépasser 50 caractères"),
+
+    email: Yup.string()
+      .email("Email invalide")
+      .required("L'email est obligatoire"),
+
+    telephone: Yup.string()
+      .required("Le numéro de téléphone est obligatoire")
+      .matches(/^[0-9]{8}$/, "Le numéro doit contenir 8 chiffres"),
+
+    message: Yup.string()
+      .required("Le message est obligatoire")
+      .min(10, "Le message doit contenir au moins 10 caractères")
+      .max(500, "Le message ne peut pas dépasser 500 caractères"),
+  });
+
+  const initialValues: ContactFormValues = {
+    nom: "",
+    prenom: "",
+    email: "",
+    telephone: "",
+    message: "",
+  };
+
+  const handleSubmit = (
+    values: ContactFormValues,
+    { setSubmitting, resetForm }: FormikHelpers<ContactFormValues>
+  ) => {
+    // Logique d'envoi du formulaire
     axios({
       method: "POST",
       url: "https://backendserver.iwalink.com/api/sendvoyancemessage",
@@ -125,15 +175,15 @@ export default function Home() {
       },
     })
       .then((response) => {
-        alert(response);
+        console.log(values);
+        setSubmitting(false);
+        resetForm();
       })
       .catch((error) => {
         console.log(error);
       });
   };
-  useEffect(() => {
-    sendMessage();
-  }, []);
+
   return (
     <>
       <div className="fixed w-full  z-[100000000] ">
@@ -726,30 +776,121 @@ export default function Home() {
               </h1>
             </ScrollAnimation>
             <Separator className="mt-5 w-40 bg-red-500" />
-            <div className="mt-5 w-full flex sm:flex-nowrap flex-wrap  gap-2">
-              <Input type="text" className="text-white" placeholder="Nom" />
-              <Input type="text" className="text-white" placeholder="Prenom" />
-            </div>
-            <div className="mt-5 w-full flex  sm:flex-nowrap flex-wrap gap-2">
-              <Input type="email" className="text-white" placeholder="Email" />
-              <Input
-                type="number"
-                className="text-white"
-                placeholder="Telephone"
-              />
-            </div>
+            <Formik
+              initialValues={initialValues}
+              validationSchema={validationSchema}
+              onSubmit={handleSubmit}
+              validateOnChange={true}
+              validateOnBlur={true}
+            >
+              {({
+                errors,
+                touched,
+                handleChange,
+                handleBlur,
+                values,
+                isSubmitting,
+                isValid,
+                dirty,
+              }) => (
+                <Form>
+                  <div className="mt-5 w-full flex sm:flex-nowrap flex-wrap  gap-2">
+                    <div className="w-full">
+                      <Input
+                        type="text"
+                        className="text-white"
+                        placeholder="Nom"
+                        name="nom"
+                        onChange={handleChange}
+                        onBlur={handleBlur}
+                        value={values.nom}
+                      />
+                      {errors.nom && touched.nom && (
+                        <div className="text-red-500 mt-2 text-xs">
+                          {errors.nom}
+                        </div>
+                      )}
+                    </div>
 
-            <div className="mt-5 w-full">
-              <Textarea
-                className="text-white"
-                placeholder="Entrez Votre message"
-              />
-              <div className="w-full flex justify-end">
-                <Button className="bg-red-500 mt-5 hover:bg-red-400">
-                  Evnoyer le message
-                </Button>
-              </div>
-            </div>
+                    <div className="w-full">
+                      <Input
+                        type="text"
+                        className="text-white"
+                        placeholder="Prenom"
+                        name="prenom"
+                        onChange={handleChange}
+                        onBlur={handleBlur}
+                        value={values.prenom}
+                      />
+                      {errors.prenom && touched.prenom && (
+                        <div className="text-red-500 mt-2 text-xs">
+                          {errors.prenom}
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                  <div className="mt-5 w-full flex  sm:flex-nowrap flex-wrap gap-2">
+                    <div className="w-full">
+                      <Input
+                        type="email"
+                        className="text-white"
+                        placeholder="Email"
+                        name="email"
+                        onChange={handleChange}
+                        onBlur={handleBlur}
+                        value={values.email}
+                      />
+                      {errors.email && touched.email && (
+                        <div className="text-red-500 mt-2 text-xs">
+                          {errors.email}
+                        </div>
+                      )}
+                    </div>
+                    <div className="w-full">
+                      <Input
+                        type="number"
+                        className="text-white"
+                        placeholder="Telephone"
+                        name="telephone"
+                        onChange={handleChange}
+                        onBlur={handleBlur}
+                        value={values.telephone}
+                      />
+                      {errors.telephone && touched.telephone && (
+                        <div className="text-red-500 text-xs mt-2">
+                          {errors.telephone}
+                        </div>
+                      )}
+                    </div>
+                  </div>
+
+                  <div className="mt-5 w-full">
+                    <Textarea
+                      className="text-white"
+                      placeholder="Entrez Votre message"
+                      name="message"
+                      onChange={handleChange}
+                      onBlur={handleBlur}
+                      value={values.message}
+                    />
+                    {errors.message && touched.message && (
+                      <div className="text-red-500 text-xs mt-2">
+                        {errors.message}
+                      </div>
+                    )}
+                    <div className="w-full flex justify-end">
+                      <Button
+                        className="bg-red-500 mt-5 hover:bg-red-400"
+                        type="submit"
+                        disabled={isSubmitting || !isValid || !dirty}
+                      >
+                        Evnoyer le message
+                      </Button>
+                    </div>
+                  </div>
+                </Form>
+              )}
+            </Formik>
           </div>
         </div>
       </div>
