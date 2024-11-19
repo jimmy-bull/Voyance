@@ -116,7 +116,6 @@ export default function Home() {
   ]);
 
   const sendMessage = async () => {
-    alert("send");
     axios({
       method: "POST",
       url: "https://backendserver.iwalink.com/api/sendvoyancemessage",
@@ -126,7 +125,7 @@ export default function Home() {
       },
     })
       .then((response) => {
-        alert("ok");
+        alert(response);
       })
       .catch((error) => {
         console.log(error);
