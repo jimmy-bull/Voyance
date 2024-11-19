@@ -166,14 +166,23 @@ export default function Home() {
     { setSubmitting, resetForm }: FormikHelpers<ContactFormValues>
   ) => {
     // Logique d'envoi du formulaire
-    axios({
-      method: "POST",
-      url: "https://backendserver.iwalink.com/api/sendvoyancemessage",
-      headers: {
-        "Content-Type": "application/json",
-        //  Authorization: `Bearer ${token}`,
-      },
-    })
+    axios
+      .post(
+        "https://backendserver.iwalink.com/api/sendvoyancemessage",
+        {
+          nom: values.nom,
+          prenom: values.prenom,
+          email: values.email,
+          telephone: values.telephone,
+          message: values.message,
+        },
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Accept: "application/json",
+          },
+        }
+      )
       .then((response) => {
         console.log(values);
         setSubmitting(false);
