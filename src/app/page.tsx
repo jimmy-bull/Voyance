@@ -1,9 +1,10 @@
 "use client";
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { PhoneCall, Mails, Plus, Check, Star, Stars } from "lucide-react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
+import { useInView } from "framer-motion";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -21,8 +22,119 @@ import "animate.css/animate.compat.css";
 import ScrollAnimation from "react-animate-on-scroll";
 import "animate.css";
 import { motion } from "framer-motion";
-
+import axios from "axios";
 export default function Home() {
+  const [links, set_links] = useState([
+    {
+      text: "Cabinet de voyance",
+      link: "#cabinet_voyance",
+      color: "#fff",
+    },
+    {
+      text: "Biographie",
+      link: "#bio",
+      color: "#fff",
+    },
+    {
+      text: "Mes services et rituels",
+      link: "#services",
+      color: "#fff",
+    },
+    {
+      text: "Les témoignages",
+      link: "#temoignage",
+      color: "#fff",
+    },
+    {
+      text: "Contact",
+      link: "#contact",
+      color: "#fff",
+    },
+  ]);
+
+  const change_color = (key: number) => {
+    set_links((prev) =>
+      prev.map((data, index) =>
+        key === index
+          ? { ...data, color: "#ef4444" }
+          : { ...data, color: "#FFF" }
+      )
+    );
+  };
+
+  useEffect(() => {
+    const hash = window.location.hash;
+    set_links((prev) => {
+      return prev.map((data, key) => {
+        if (hash === data.link) {
+          return { ...data, color: "#ef4444" };
+        } else {
+          return { ...data, color: "#FFF" };
+        }
+      });
+    });
+  }, []);
+
+  const ref_cabinet_voyance = useRef(null);
+  const isInView_ref_cabinet_voyance = useInView(ref_cabinet_voyance);
+
+  const ref_bio = useRef(null);
+  const isInView_ref_bio = useInView(ref_bio);
+
+  const ref_services = useRef(null);
+  const isInView_ref_services = useInView(ref_services);
+
+  const ref_temoin = useRef(null);
+  const isInView_ref_temoin = useInView(ref_temoin);
+
+  const ref_contact = useRef(null);
+  const isInView_ref_contact = useInView(ref_contact);
+
+  useEffect(() => {
+    if (isInView_ref_cabinet_voyance) {
+      change_color(0);
+    }
+    if (isInView_ref_bio) {
+      change_color(1);
+    }
+    if (isInView_ref_services) {
+      change_color(2);
+    }
+
+    if (isInView_ref_temoin) {
+      change_color(3);
+    }
+    if (isInView_ref_contact) {
+      change_color(4);
+    }
+  }, [
+    isInView_ref_cabinet_voyance,
+    isInView_ref_bio,
+    isInView_ref_services,
+    isInView_ref_temoin,
+    isInView_ref_contact,
+  ]);
+
+  const sendMessage = async () => {
+    alert("send");
+    axios({
+      method: "POST",
+      url: "https://backendserver.iwalink.com/api/sendvoyancemessage",
+      headers: {
+        "Content-Type": "application/json",
+        //  Authorization: `Bearer ${token}`,
+      },
+    })
+      .then((response) => {
+        alert("ok");
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  };
+  useEffect(() => {
+    sendMessage();
+  }, []);
   return (
     <>
       <div className="fixed w-full  z-[100000000] ">
@@ -39,32 +151,53 @@ export default function Home() {
               className="h-7 w-7 cursor-pointer text-white sm:text-sm text-xs"
               aria-hidden="true"
             />
-            <span className="sm:text-sm text-xs">jbull635@gmail.com</span>
+            <span className="sm:text-sm text-xs">bafodesakho255@gmail.com</span>
           </div>
         </div>
         <div className="w-full justify-center md:flex hidden relative z-[1000000]">
           <div className="flex   justify-evenly shadow-xl w-[100%]  py-3 items-center bg-black ">
-            <Link href={"/"} className="text-white uppercase	text-sm">
-              Cabinet de voyance
-            </Link>
-            <Link href={"/"} className="text-white uppercase	text-sm">
+            {links.map((data, key) => {
+              return (
+                <Link
+                  key={key}
+                  href={data.link}
+                  // className="text-white uppercase	text-sm"
+                >
+                  <motion.button
+                    onClick={() => change_color(key)}
+                    initial={{ color: data.color }}
+                    animate={{ color: data.color }}
+                    whileHover={{ scale: 1.1 }}
+                    transition={{
+                      color: { duration: 1 },
+                      scale: { duration: 0.5 },
+                    }}
+                  >
+                    {data.text}
+                  </motion.button>
+                </Link>
+              );
+            })}
+
+            {/* <Link href={"#bio"} className="text-white uppercase	text-sm">
               Biographie
             </Link>
-            <Link href={"/"} className="text-white uppercase	text-sm">
+            <Link href={"#services"} className="text-white uppercase	text-sm">
               Mes services et rituels
             </Link>
-            <Link href={"/"} className="text-white uppercase	text-sm">
+            <Link href={"#temoignage"} className="text-white uppercase	text-sm">
               Les témoignages
             </Link>
-            <Link href={"/"} className="text-white uppercase	text-sm">
+            <Link href={"#contact"} className="text-white uppercase	text-sm">
               Contact
-            </Link>
+            </Link> */}
           </div>
         </div>
       </div>
 
       <div
         id="cabinet_voyance"
+        ref={ref_cabinet_voyance}
         className="bg-[url('/bg.png')]  bg-cover	bg-opacity-25 xl:h-screen xl:py-0 sm:py-40 py-20 w-full  flex justify-center"
       >
         <div className="xl:w-[50%] md:w-[80%] w-[90%] flex justify-center flex-col items-center  h-full">
@@ -100,7 +233,7 @@ export default function Home() {
             </h1>
             <Separator className="mt-5 w-40 bg-red-500" />
 
-            <p className="text-white mt-5">
+            <p className="text-white mt-5" ref={ref_bio}>
               Je Suis le Professeur Sakho, Grand Marabout aux Secrets Ancestraux
               Depuis plus de 30 ans, je mets au service des autres le
               savoir-faire précieux que j&apos;ai hérité de mes ancêtres,
@@ -219,7 +352,10 @@ export default function Home() {
         </div>
       </div>
       <div className="w-full  justify-center flex mb-10 bg-[#2a324a]">
-        <div className="w-[80%] flex justify-between mt-10 mb-10 gap-5 flex-wrap">
+        <div
+          ref={ref_services}
+          className="w-[80%] flex justify-between mt-10 mb-10 gap-5 flex-wrap"
+        >
           <div className=" w-full ">
             <ScrollAnimation animateIn="fadeInLeft">
               <h6 className="text-sm font-bold text-red-500 uppercase tracking-widest">
@@ -366,7 +502,10 @@ export default function Home() {
           </h1>
         </ScrollAnimation>
       </div>
-      <div className="bg-[url('/bg2.jpg')]  bg-cover	bg-opacity-25  sm:py-40 py-20 w-full gap-5 flex-wrap  flex justify-center">
+      <div
+        ref={ref_temoin}
+        className="bg-[url('/bg2.jpg')]  bg-cover	bg-opacity-25  sm:py-40 py-20 w-full gap-5 flex-wrap  flex justify-center"
+      >
         <div className="bg-white rounded-lg py-5 p-2 flex flex-col justify-center items-center lg:w-[20%]  ">
           <div className="rounded-full  p-5 flex gap-2">
             <Stars
@@ -577,7 +716,7 @@ export default function Home() {
             </ScrollAnimation>
 
             <ScrollAnimation animateIn="fadeInLeft">
-              <h1 className="mt-5 text-xl text-white">
+              <h1 ref={ref_contact} className="mt-5 text-xl text-white">
                 Vous avez des questions et vous souhaitez obtenir des réponses ?
                 Vous êtes à la recherche de conseils et de soutien ? Ou
                 peut-être que vous êtes prêt à démarrer votre voyage de
